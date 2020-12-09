@@ -4,11 +4,9 @@
   "description": "A discord bot to talk to showbie",
   "main": "main.ts",
   "dependencies": {
-    "discord.js": "^12.5.1",
-    "js-yaml": "^3.14.1"
+    "discord.js": "^12.5.1"
   },
   "devDependencies": {
-    "@types/js-yaml": "^3.12.5",
     "@types/node": "^14.14.11",
     "typescript": "^4.1.2"
   },

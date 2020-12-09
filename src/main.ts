@@ -1,9 +1,20 @@
-import fs from "fs";
-// import https from "https";
-// import discord from "discord.js";
-import yaml from "js-yaml";
-/* const {
-    Worker, MessageChannel, MessagePort, isMainThread, parentPort
-} = require('worker_threads'); */
+import discord from "discord.js"
 
-var data = yaml.load(fs.readFileSync("data/main.yaml").toString());
+const client = new discord.Client();
+client
+    .login()
+    .then(() => console.log("Started."))
+    .catch((err) => {
+        if (err) console.error(err);
+        else console.log("Couldn't Login.");
+    });
+
+client.on("message", (message) => {
+    const orig: string[] = message.content.split(" ");
+    const command: string[] = message.content.toLowerCase().split(" ");
+    if (command[0] == "sb") {
+        switch (command[1]) {
+            case "assignments"
+        }
+    }
+});
