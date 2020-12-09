@@ -1,0 +1,31 @@
+{
+  "name": "showbot",
+  "version": "1.0.0",
+  "description": "A discord bot to talk to showbie",
+  "main": "main.ts",
+  "dependencies": {
+    "discord.js": "^12.5.1",
+    "js-yaml": "^3.14.1"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^3.12.5",
+    "@types/node": "^14.14.11",
+    "typescript": "^4.1.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Skaytacium/ShowBot.git"
+  },
+  "keywords": [
+    "Bot"
+  ],
+  "author": "Skaytacium",
+  "license": "CC0-1.0",
+  "bugs": {
+    "url": "https://github.com/Skaytacium/ShowBot/issues"
+  },
+  "homepage": "https://github.com/Skaytacium/ShowBot#readme"
+}
