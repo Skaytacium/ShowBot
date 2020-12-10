@@ -2,7 +2,7 @@
   "name": "showbot",
   "version": "1.0.0",
   "description": "A discord bot to talk to showbie",
-  "main": "main.ts",
+  "main": "build/main.js",
   "dependencies": {
     "discord.js": "^12.5.1"
   },
