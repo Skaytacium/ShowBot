@@ -79,59 +79,61 @@ function createSessionEntry(headers: object, userID: string): void {
     console.log(`Created session for userID ${userID}`);
 }
 
-async function login(userID: string, orig: string[]): Promise<any> {
-    const tempFP = makefp(10);
-    const options: object = {
-        "method": "POST",
-        "headers": makeTokenHeads(orig[2], orig[3], orig[4])
-    };
-
-    const req = https.request(baseURL + "/sessions", options, res => {
-        console.log(`Logging in for user ${userID}`);
-
-        res.on('data', chunk => {
-            chunk = JSON.parse(chunk.toString());
-            switch (('' + res.statusCode)[0]) {
-                case "4":
-                    chunk.errors.forEach((err: any, index: number) => {
-                        return (`**Error!**\n*Code:* ${err.status}\n*Definition:* ${//@ts-ignore
-                            http.STATUS_CODES[err.status]}.\n*Meaning:* ${err.title}`);
-                    });
-                    break;
-
-                case "2":
-                    data.accounts[userID].user = orig[2];
-                    data.accounts[userID].pass = orig[3];
-                    data.accounts[userID].school =
-                        orig[4] == undefined ? "BHIS" : orig[4];
-
-                    fs.writeFileSync(dataPath + "accounts.json", JSON.stringify(data.accounts));
-
-                    createSessionEntry(
-                        makeAuthHeads(chunk.session.token, tempFP, data.accounts[userID].school),
-                        userID);
-                    return (["Created session!"]);
-
-                default: return (["Could not log in, try again later!"]);
-            }
+function login(userID: string, orig: string[]): Promise<string> {
+    return new Promise(resolve => {
+        const tempFP = makefp(10);
+        const options: object = {
+            "method": "POST",
+            "headers": makeTokenHeads(orig[2], orig[3], orig[4])
+        };
+    
+        const req = https.request(baseURL + "/sessions", options, res => {
+            console.log(`Logging in for user ${userID}`);
+    
+            res.on('data', chunk => {
+                chunk = JSON.parse(chunk.toString());
+                switch (('' + res.statusCode)[0]) {
+                    case "4":
+                        chunk.errors.forEach((err: any, index: number) => {
+                            resolve(`**Error!**\n*Code:* ${err.status}\n*Definition:* ${//@ts-ignore
+                                http.STATUS_CODES[err.status]}.\n*Meaning:* ${err.title}`);
+                        });
+                        break;
+    
+                    case "2":
+                        data.accounts[userID] = {};
+                        data.accounts[userID].user = orig[2];
+                        data.accounts[userID].pass = orig[3];
+                        data.accounts[userID].school =
+                            orig[4] == undefined ? "BHIS" : orig[4];
+    
+                        fs.writeFileSync(dataPath + "accounts.json", JSON.stringify(data.accounts));
+    
+                        createSessionEntry(
+                            makeAuthHeads(chunk.session.token, tempFP, data.accounts[userID].school),
+                            userID);
+                        resolve("Created session!");
+    
+                    default: resolve("Could not log in, try again later!");
+                }
+            });
         });
+        req.write(JSON.stringify({
+            "session": {
+                "fingerprint": tempFP
+            }
+        }));
+        req.end();
     });
-    req.write(JSON.stringify({
-        "session": {
-            "fingerprint": tempFP
-        }
-    }));
-    req.end();
 }
 
 for (const account in data.accounts) {
     if (account == "fp") continue;
-    login(account, [
-        "",
-        "",
+    login(account, ["", "",
         data.accounts[account].user,
         data.accounts[account].pass,
-        data.accounts[account].school]);
+        data.accounts[account].school])
+        .then(console.log);
 }
 
 client.on("message", (message) => {
@@ -161,8 +163,10 @@ ShowBot **does not use your account for any other purposes.**\
 
             case "creds":
                 message.channel.send("Logging in...");
-                login(message.author.id, orig)
-                    .then(val => message.channel.send(val))
+                login(message.author.id, orig).then(val => {
+                    message.channel.send(val);
+                    console.log(val);
+                });
                 break;
 
             case "assignments":
