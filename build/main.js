@@ -18,6 +18,7 @@ var dataPath = "data/";
 var baseURL = "https://my.showbie.com/core";
 var data = {};
 fs_1.writeFileSync(dataPath + "sessions.json", "{}");
+updateFiles();
 function updateFiles(include, removeTemp) {
     if (removeTemp === void 0) { removeTemp = true; }
     console.log("Updating files: " + (include == undefined ? "all" : include));
@@ -37,15 +38,6 @@ function updateFiles(include, removeTemp) {
         }
     });
 }
-updateFiles();
-client.login(data.discord.token)
-    .then(function () { return console.log("Started"); })
-    .catch(function (err) {
-    if (err)
-        console.error(err);
-    else
-        console.log("Couldnt Login");
-});
 function tob64(string) {
     console.log("Converting " + string + " to base64");
     return Buffer.from(string).toString('base64');
@@ -178,15 +170,47 @@ function login(userID, orig) {
         req.end();
     });
 }
-for (var account in data.accounts) {
-    if (account == "fp")
-        continue;
-    login(account, ["", "",
-        data.accounts[account].user,
-        data.accounts[account].pass,
-        data.accounts[account].school])
-        .then(console.log);
+function initRegistered(excludes) {
+    for (var account in data.accounts) {
+        if (account == "fp")
+            continue;
+        if (excludes === null || excludes === void 0 ? void 0 : excludes.includes(account))
+            continue;
+        login(account, ["", "",
+            data.accounts[account].user,
+            data.accounts[account].pass,
+            data.accounts[account].school])
+            .then(console.log);
+    }
 }
+client.login(data.discord.token)
+    .then(function () { return console.log("Started!"); })
+    .catch(function (err) {
+    if (err)
+        console.error(err);
+    else
+        console.log("Bot couldnt login!");
+});
+rl.question("Initialize accounts?", function (ans) {
+    if (ans.match(/y/i) || ans.match(/yes/i))
+        initRegistered();
+    else if (ans.match(/n/i) || ans.match(/No/i))
+        return;
+    else
+        console.log("Invalid choice!");
+});
+rl.on('line', function (line) {
+    var command = line.toLowerCase().split(" ");
+    switch (command[0]) {
+        case "exit":
+            console.log("Exiting....");
+            for (var session in data.sessions)
+                logout(session);
+            console.log("Bye!");
+            process.exit(0);
+        default: console.log("Command not found!");
+    }
+});
 client.on("message", function (message) {
     var orig = message.content.split(" ");
     var command = message.content.toLowerCase().split(" ");

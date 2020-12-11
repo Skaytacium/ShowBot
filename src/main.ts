@@ -24,52 +24,46 @@ const baseURL: string = "https://my.showbie.com/core";
 var data: any = {};
 
 writeFileSync(dataPath + "sessions.json", "{}");
+updateFiles();
 
 function updateFiles(include?: string[], removeTemp: boolean = true): void {
-    console.log(`Updating files: ${include == undefined ? `all` : include}`);
+    console.log(`INFO: Updating files: ${include == undefined ? `all` : include}`);
 
     readdirSync(dataPath).forEach((file) => {
         const name: string[] = file.split(".");
 
         if (include != undefined && include.includes(name[0]) && name[1] == "json") {
             data[name[0]] = JSON.parse(readFileSync(dataPath + file).toString());
-            console.log(`Imported: ${file}`);
+            console.log(`SUCCESS: Imported: ${file}`);
         }
         else if (include == undefined && name[1] == "json") {
             data[name[0]] = JSON.parse(readFileSync(dataPath + file).toString());
-            console.log(`Imported: ${file}`);
+            console.log(`SUCCESS: Imported: ${file}`);
         } 
         else if (removeTemp && name[1] != "json") {
             rmSync(dataPath + file);
-            console.log(`Removed file ${file}`);
+            console.log(`SUCCESS: Removed file ${file}`);
         }
     });
-} updateFiles();
-
-client.login(data.discord.token)
-    .then(() => console.log("Started"))
-    .catch((err) => {
-        if (err) console.error(err);
-        else console.log("Couldnt Login");
-    });
+}
 
 function tob64(string: string): string {
-    console.log(`Converting ${string} to base64`);
+    console.log(`INFO: Converting ${string} to base64`);
     return Buffer.from(string).toString('base64');
 }
 
 function fromb64(string: string): string {
-    console.log(`Converting ${string} from base64`);
+    console.log(`INFO: Converting ${string} from base64`);
     return Buffer.from(string, 'base64').toString('ascii');
 }
 
 function randomValue(array: any): string {
-    console.log(`Returning random value from ${array}`);
+    console.log(`INFO: Returning random value from ${array}`);
     return array[array.length * Math.random() << 0];
 }
 
 function makefp(length: number): string {
-    console.log(`Made a random fingerprint of length ${length}`);
+    console.log(`INFO: Made a random fingerprint of length ${length}`);
 
     let result: string = '';
     let characters: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -85,7 +79,7 @@ function makeTokenHeads(
     user: string,
     pass: string,
     school: string = "BHIS"): object {
-    console.log(`Making token headers for user ${user} in ${school}`);
+    console.log(`INFO: Making token headers for user ${user} in ${school}`);
     const tempReq: any = data.main.req;
 
     tempReq["x-showbie-clientapikey"] = data.main.schools[school];
@@ -96,7 +90,7 @@ function makeTokenHeads(
 }
 
 function makeAuthHeads(token: string, fp: string, school: string): object {
-    console.log(`Making auth headers for user in ${school}`);
+    console.log(`INFO: Making auth headers for user in ${school}`);
     const tempReq: any = data.main.req;
 
     tempReq["x-showbie-clientapikey"] = data.main.schools[school];
@@ -113,7 +107,7 @@ function createSessionEntry(headers: object, userID: string): void {
     writeFileSync(dataPath + "sessions.json", JSON.stringify(data.sessions));
     updateFiles(["sessions"]);
 
-    console.log(`Created session for userID ${userID}`);
+    console.log(`SUCCESS: Created session for userID ${userID}`);
 }
 
 function getFromAPI(
@@ -136,7 +130,7 @@ function getFromAPI(
                             console.log(err);
                             reject(err);
                         } else {
-                            console.log(`Wrote to file ${filename}.${userID}.json`);
+                            console.log(`SUCCESS: Wrote to file ${filename}.${userID}.json`);
                             resolve(dataPath + `${filename}.${userID}.json`);
                         }
                     }
@@ -187,7 +181,7 @@ function login(userID: string, orig: string[]): Promise<string> {
         };
 
         const req = request(baseURL + "/sessions", options, res => {
-            console.log(`Logging in for user ${userID}`);
+            console.log(`INFO: Logging in for user ${userID}`);
 
             let reqData: any = '';
             res.on('data', chunk => reqData += chunk.toString());
@@ -228,14 +222,44 @@ function login(userID: string, orig: string[]): Promise<string> {
     });
 }
 
-for (const account in data.accounts) {
-    if (account == "fp") continue;
-    login(account, ["", "",
-        data.accounts[account].user,
-        data.accounts[account].pass,
-        data.accounts[account].school])
-        .then(console.log);
+function initRegistered(excludes?: string[]): void {
+    for (const account in data.accounts) {
+        if (account == "fp") continue;
+        if (excludes?.includes(account)) continue;
+        login(account, ["", "",
+            data.accounts[account].user,
+            data.accounts[account].pass,
+            data.accounts[account].school])
+            .then((val: string) => console.log(`INFO: ${val}`));
+    }
 }
+
+client.login(data.discord.token)
+    .then(() => console.log("INFO: Started!"))
+    .catch((err) => {
+        if (err) console.error(err);
+        else console.log("ERROR: Bot couldnt login!");
+    });
+
+rl.question("Initialize accounts?", (ans: string) => {
+    if (ans.match(/y/i) || ans.match(/yes/i)) initRegistered();
+    else if (ans.match(/n/i) || ans.match(/No/i)) return;
+    else console.log("ERROR: Invalid choice!");
+});
+
+rl.on('line', (line: string) => {
+    // const orig: string[] = line.split(" ");
+    const command: string[] = line.toLowerCase().split(" ");
+    switch (command[0]) {
+        case "exit":
+            console.log("INFO: Exiting....");
+            for (const session in data.sessions) logout(session);
+            console.log("Bye!");
+            process.exit(0);
+        
+        default: console.log("ERROR: Command not found!");
+    }
+});
 
 client.on("message", (message) => {
     const orig: string[] = message.content.split(" ");
@@ -273,7 +297,7 @@ ShowBot **does not use your account for any other purposes.**\
 
                 login(message.author.id, orig).then(val => {
                     message.channel.send(val);
-                    console.log(val);
+                    console.log(`INFO: ${val}`);
                 });
                 break;
 
