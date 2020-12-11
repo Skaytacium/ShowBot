@@ -23,7 +23,6 @@ const dataPath: string = "data/";
 const baseURL: string = "https://my.showbie.com/core";
 var data: any = {};
 
-writeFileSync(dataPath + "sessions.json", "{}");
 updateFiles();
 
 function updateFiles(include?: string[], removeTemp: boolean = true): void {
@@ -39,7 +38,7 @@ function updateFiles(include?: string[], removeTemp: boolean = true): void {
         else if (include == undefined && name[1] == "json") {
             data[name[0]] = JSON.parse(readFileSync(dataPath + file).toString());
             console.log(`SUCCESS: Imported: ${file}`);
-        } 
+        }
         else if (removeTemp && name[1] != "json") {
             rmSync(dataPath + file);
             console.log(`SUCCESS: Removed file ${file}`);
@@ -174,6 +173,9 @@ function logout(userID: string): Promise<string> {
 
 function login(userID: string, orig: string[]): Promise<string> {
     return new Promise(resolve => {
+        if (data.sessions[userID]) {
+            resolve(`Session already exists for ${userID}. Logout to delete the session.`); return;
+        }
         const tempFP = makefp(20);
         const options: object = {
             "method": "POST",
@@ -222,17 +224,27 @@ function login(userID: string, orig: string[]): Promise<string> {
     });
 }
 
-function initRegistered(excludes?: string[]): void {
+async function initRegistered(excludes?: string[]): Promise<void> {
     for (const account in data.accounts) {
         if (account == "fp") continue;
         if (excludes?.includes(account)) continue;
-        login(account, ["", "",
+        await login(account, ["", "",
             data.accounts[account].user,
             data.accounts[account].pass,
             data.accounts[account].school])
             .then((val: string) => console.log(`INFO: ${val}`));
     }
 }
+
+async function deinitSessions(excludes?: string[]): Promise<void> {
+    for (const account in data.accounts) {
+        if (account == "fp") continue;
+        if (excludes?.includes(account)) continue;
+        await logout(account)
+            .then((val: string) => console.log(`INFO: ${val}`));
+    }
+}
+
 
 client.login(data.discord.token)
     .then(() => console.log("INFO: Started!"))
@@ -242,9 +254,9 @@ client.login(data.discord.token)
     });
 
 rl.question("Initialize accounts?", (ans: string) => {
-    if (ans.match(/y/i) || ans.match(/yes/i)) initRegistered();
+    if (ans.match(/y/i) || ans.match(/yes/i)) initRegistered().then(() => console.log("Done initializing!"));
     else if (ans.match(/n/i) || ans.match(/No/i)) return;
-    else console.log("ERROR: Invalid choice!");
+    else console.log("ERROR: Invalid choice!, use init to ask again.");
 });
 
 rl.on('line', (line: string) => {
@@ -253,10 +265,14 @@ rl.on('line', (line: string) => {
     switch (command[0]) {
         case "exit":
             console.log("INFO: Exiting....");
-            for (const session in data.sessions) logout(session);
-            console.log("Bye!");
-            process.exit(0);
-        
+            if (command[1] == "logout") deinitSessions().then(() => {
+                console.log("Bye!");
+                process.exit(0);
+            }); else {
+                console.log("Bye!");
+                process.exit(0);
+            }
+
         default: console.log("ERROR: Command not found!");
     }
 });
@@ -315,7 +331,9 @@ ShowBot **does not use your account for any other purposes.**\
                 if (!data.sessions[message.author.id]) {
                     message.channel.send("Log in first! `sb login`"); break;
                 }
-                getFromAPI(message.author.id, "assignments").then(console.log, console.log)
+                getFromAPI(message.author.id, "assignments").then((path: string) => {
+                    const assignments: any = JSON.parse(readFileSync(path).toString());
+                }, console.log)
                 break;
 
             case "logout":
