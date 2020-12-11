@@ -18,7 +18,8 @@ var dataPath = "data/";
 var baseURL = "https://my.showbie.com/core";
 var data = {};
 fs_1.writeFileSync(dataPath + "sessions.json", "{}");
-function updateFiles(include) {
+function updateFiles(include, removeTemp) {
+    if (removeTemp === void 0) { removeTemp = true; }
     console.log("Updating files: " + (include == undefined ? "all" : include));
     fs_1.readdirSync(dataPath).forEach(function (file) {
         var name = file.split(".");
@@ -29,6 +30,10 @@ function updateFiles(include) {
         else if (include == undefined && name[1] == "json") {
             data[name[0]] = JSON.parse(fs_1.readFileSync(dataPath + file).toString());
             console.log("Imported: " + file);
+        }
+        else if (removeTemp && name[1] != "json") {
+            fs_1.rmSync(dataPath + file);
+            console.log("Removed file " + file);
         }
     });
 }
@@ -93,7 +98,7 @@ function getFromAPI(userID, filename, method) {
             "method": method,
             "headers": data.sessions[userID]
         }, function (res) {
-            stream_1.pipeline(res, zlib_1.createGunzip(), fs_1.createWriteStream(dataPath + (filename + "." + userID + ".txt")), function (err) {
+            stream_1.pipeline(res, zlib_1.createGunzip(), fs_1.createWriteStream(dataPath + (filename + "." + userID + ".json")), function (err) {
                 if (err) {
                     console.log(err);
                     reject(err);
@@ -113,8 +118,21 @@ function logout(userID) {
         if (data.sessions[userID]) {
             var sessionToken = fromb64((data.sessions[userID]["Authorization"])
                 .split(",")[0].slice(10));
-            console.log(sessionToken);
-            resolve("Debug");
+            https_1.request(baseURL + "/sessions/" + sessionToken, {
+                "method": "DELETE",
+                "headers": data.sessions[userID]
+            }, function (res) {
+                switch (('' + res.statusCode)[0]) {
+                    case "4":
+                        resolve("**Error!**\n*Code:* " + res.statusCode + "\n*Definition:* " + http_1.STATUS_CODES[res.statusCode] + ".");
+                    case "2":
+                        delete data.sessions[userID];
+                        fs_1.writeFileSync(dataPath + "sessions.json", JSON.stringify(data.sessions));
+                        updateFiles(["sessions"]);
+                        resolve("Logged out succesfully!");
+                    default: resolve("Could not log out, try again later!");
+                }
+            }).end();
         }
         else
             resolve("No login found! Login first to logout.");

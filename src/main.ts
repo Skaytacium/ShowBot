@@ -155,8 +155,6 @@ function logout(userID: string): Promise<string> {
                 (data.sessions[userID]["Authorization"])
                     .split(",")[0].slice(10));
 
-            console.log(sessionToken);
-
             request(baseURL + "/sessions/" + sessionToken, {
                 "method": "DELETE",
                 "headers": data.sessions[userID]
@@ -167,8 +165,8 @@ function logout(userID: string): Promise<string> {
                             STATUS_CODES[res.statusCode]}.`);
 
                     case "2":
-                        data.sessions[userID] = {};
-                        writeFileSync(data.sesssions, dataPath + "sessions.json");
+                        delete data.sessions[userID];
+                        writeFileSync(dataPath + "sessions.json", JSON.stringify(data.sessions));
                         updateFiles(["sessions"]);
                         resolve("Logged out succesfully!");
 
