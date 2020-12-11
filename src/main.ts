@@ -74,6 +74,30 @@ function makefp(length: number): string {
     return result;
 }
 
+function calcTime(sub: number, server: number, overdue: boolean = false): string | undefined {
+    const s = (sub - server) / 1000;
+    const pos: boolean = s > 0;
+    if (!overdue && !pos) return;
+    
+    const months: number = pos ? Math.floor(s / (3600 * 720)) : Math.ceil(s / (3600 * 720));
+    const monthdays: number = months * 30;
+    
+    const days: number = pos ? Math.floor(s / (3600 * 24)) - monthdays : Math.ceil(s / (3600 * 24)) - monthdays;
+    const dayhours: number = (monthdays + days) * 24;
+
+    const hours: number = pos ? Math.floor(s / 3600) - dayhours : Math.ceil(s / 3600) - dayhours;
+    const hourminutes: number = (dayhours + hours) * 60;
+
+    const minutes: number = pos ? Math.floor(s / 60) - hourminutes : Math.ceil(s / 60) - hourminutes;
+    const minuteseconds: number = (hourminutes + minutes) * 60;
+
+    const seconds: number = pos ? Math.floor(s) - minuteseconds : Math.ceil(s) - minuteseconds;
+
+    return pos
+    ? `Due in __${months} months, ${days} days, ${hours} hours and ${minutes} minutes.__*`
+    : `Overdue by __${months * -1} months, ${days  * -1} days, ${hours * -1} hours and ${minutes * -1} minutes.__`;
+}
+
 function makeTokenHeads(
     user: string,
     pass: string,
@@ -327,13 +351,37 @@ ShowBot **does not use your account for any other purposes.**\
                 else message.channel.send("Who?");
                 break;
 
-            case "assignments":
+            case "ass":
                 if (!data.sessions[message.author.id]) {
                     message.channel.send("Log in first! `sb login`"); break;
                 }
+                message.channel.startTyping();
+                let msg: string = '';
+
                 getFromAPI(message.author.id, "assignments").then((path: string) => {
-                    const assignments: any = JSON.parse(readFileSync(path).toString());
-                }, console.log)
+                    const info: any = JSON.parse(readFileSync(path).toString());
+
+                    info.assignments.forEach((assignment: any) => {
+                        let result: string | undefined;
+
+                        if (assignment.dueDate)
+                            result = calcTime(assignment.dueDate, info.meta.serverTime, (command[2] == "all"));
+                        else result = "Due without a time limit";
+
+                        if (assignment.meta.attachmentCount == 0
+                            && assignment["studentAccessLevel"] == "E"
+                            && result != undefined) {
+
+                            if (msg.length > 1500) {
+                                message.channel.send(msg);
+                                msg = '';
+                            } msg += (`**${assignment.name}**: ${result}\n\n`);
+                        }
+                    });
+                    message.channel.send(msg);
+                }, console.log);
+
+                message.channel.stopTyping();
                 break;
 
             case "logout":

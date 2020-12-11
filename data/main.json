@@ -15,5 +15,13 @@
   },
   "schools": {
     "BHIS": "HYDVER0f33531300a0d39439cc3438320a37383436fb32"
+  },
+  "studentAccessLevel": {
+    "A": "Assigned"
+  },
+  "status": {
+    "E": "Editable",
+    "R": "Readable",
+    "L": "Locked"
   }
 }

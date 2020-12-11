@@ -94,6 +94,25 @@ function makefp(length) {
         result += characters.charAt(Math.floor(Math.random() * charactersLength));
     return result;
 }
+function calcTime(sub, server, overdue) {
+    if (overdue === void 0) { overdue = false; }
+    var s = (sub - server) / 1000;
+    var pos = s > 0;
+    if (!overdue && !pos)
+        return;
+    var months = pos ? Math.floor(s / (3600 * 720)) : Math.ceil(s / (3600 * 720));
+    var monthdays = months * 30;
+    var days = pos ? Math.floor(s / (3600 * 24)) - monthdays : Math.ceil(s / (3600 * 24)) - monthdays;
+    var dayhours = (monthdays + days) * 24;
+    var hours = pos ? Math.floor(s / 3600) - dayhours : Math.ceil(s / 3600) - dayhours;
+    var hourminutes = (dayhours + hours) * 60;
+    var minutes = pos ? Math.floor(s / 60) - hourminutes : Math.ceil(s / 60) - hourminutes;
+    var minuteseconds = (hourminutes + minutes) * 60;
+    var seconds = pos ? Math.floor(s) - minuteseconds : Math.ceil(s) - minuteseconds;
+    return pos
+        ? "Due in __" + months + " months, " + days + " days, " + hours + " hours and " + minutes + " minutes.__*"
+        : "Overdue by __" + months * -1 + " months, " + days * -1 + " days, " + hours * -1 + " hours and " + minutes * -1 + " minutes.__";
+}
 function makeTokenHeads(user, pass, school) {
     if (school === void 0) { school = "BHIS"; }
     console.log("INFO: Making token headers for user " + user + " in " + school);
@@ -351,14 +370,34 @@ ShowBot **does not use your account for any other purposes.**\
                 else
                     message.channel.send("Who?");
                 break;
-            case "assignments":
+            case "ass":
                 if (!data.sessions[message.author.id]) {
                     message.channel.send("Log in first! `sb login`");
                     break;
                 }
+                message.channel.startTyping();
+                var msg_1 = '';
                 getFromAPI(message.author.id, "assignments").then(function (path) {
-                    var assignments = JSON.parse(fs_1.readFileSync(path).toString());
+                    var info = JSON.parse(fs_1.readFileSync(path).toString());
+                    info.assignments.forEach(function (assignment) {
+                        var result;
+                        if (assignment.dueDate)
+                            result = calcTime(assignment.dueDate, info.meta.serverTime, (command[2] == "all"));
+                        else
+                            result = "Due without a time limit";
+                        if (assignment.meta.attachmentCount == 0
+                            && assignment["studentAccessLevel"] == "E"
+                            && result != undefined) {
+                            if (msg_1.length > 1500) {
+                                message.channel.send(msg_1);
+                                msg_1 = '';
+                            }
+                            msg_1 += ("**" + assignment.name + "**: " + result + "\n\n");
+                        }
+                    });
+                    message.channel.send(msg_1);
                 }, console.log);
+                message.channel.stopTyping();
                 break;
             case "logout":
                 message.channel.send("Logging out...");
