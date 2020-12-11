@@ -100,6 +100,7 @@ function calcTime(sub, server, overdue) {
     var pos = s > 0;
     if (!overdue && !pos)
         return;
+    var tempString = '';
     var months = pos ? Math.floor(s / (3600 * 720)) : Math.ceil(s / (3600 * 720));
     var monthdays = months * 30;
     var days = pos ? Math.floor(s / (3600 * 24)) - monthdays : Math.ceil(s / (3600 * 24)) - monthdays;
@@ -109,9 +110,17 @@ function calcTime(sub, server, overdue) {
     var minutes = pos ? Math.floor(s / 60) - hourminutes : Math.ceil(s / 60) - hourminutes;
     var minuteseconds = (hourminutes + minutes) * 60;
     var seconds = pos ? Math.floor(s) - minuteseconds : Math.ceil(s) - minuteseconds;
-    return pos
-        ? "Due in __" + months + " months, " + days + " days, " + hours + " hours and " + minutes + " minutes.__*"
-        : "Overdue by __" + months * -1 + " months, " + days * -1 + " days, " + hours * -1 + " hours and " + minutes * -1 + " minutes.__";
+    var times = {
+        "months": months,
+        "days": days,
+        "hours": hours,
+        "minutes": minutes,
+        "seconds": seconds
+    };
+    for (var time in times)
+        if (times[time])
+            tempString += (times[time] < 0 ? times[time] * -1 : times[time]) + " " + time + " ";
+    return "" + (pos ? "Due in  __" : "Overdue by  __") + tempString + "__";
 }
 function makeTokenHeads(user, pass, school) {
     if (school === void 0) { school = "BHIS"; }
@@ -384,7 +393,7 @@ ShowBot **does not use your account for any other purposes.**\
                         if (assignment.dueDate)
                             result = calcTime(assignment.dueDate, info.meta.serverTime, (command[2] == "all"));
                         else
-                            result = "Due without a time limit";
+                            result = "Due __without a time limit__";
                         if (assignment.meta.attachmentCount == 0
                             && assignment["studentAccessLevel"] == "E"
                             && result != undefined) {

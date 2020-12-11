@@ -78,24 +78,34 @@ function calcTime(sub: number, server: number, overdue: boolean = false): string
     const s = (sub - server) / 1000;
     const pos: boolean = s > 0;
     if (!overdue && !pos) return;
-    
+
+    let tempString: string = '';
     const months: number = pos ? Math.floor(s / (3600 * 720)) : Math.ceil(s / (3600 * 720));
     const monthdays: number = months * 30;
     
     const days: number = pos ? Math.floor(s / (3600 * 24)) - monthdays : Math.ceil(s / (3600 * 24)) - monthdays;
     const dayhours: number = (monthdays + days) * 24;
-
+    
     const hours: number = pos ? Math.floor(s / 3600) - dayhours : Math.ceil(s / 3600) - dayhours;
     const hourminutes: number = (dayhours + hours) * 60;
 
     const minutes: number = pos ? Math.floor(s / 60) - hourminutes : Math.ceil(s / 60) - hourminutes;
     const minuteseconds: number = (hourminutes + minutes) * 60;
-
+    
     const seconds: number = pos ? Math.floor(s) - minuteseconds : Math.ceil(s) - minuteseconds;
+    
+    const times: object = {
+        "months": months,
+        "days": days,
+        "hours": hours,
+        "minutes": minutes,
+        "seconds": seconds
+    }
 
-    return pos
-    ? `Due in __${months} months, ${days} days, ${hours} hours and ${minutes} minutes.__*`
-    : `Overdue by __${months * -1} months, ${days  * -1} days, ${hours * -1} hours and ${minutes * -1} minutes.__`;
+    for (const time in times) //@ts-ignore
+        if (times[time]) tempString += `${times[time] < 0 ? times[time] * -1 : times[time]} ${time} `;
+
+   return `${pos ? "Due in  __" : "Overdue by  __"}${tempString}__`;
 }
 
 function makeTokenHeads(
@@ -366,7 +376,7 @@ ShowBot **does not use your account for any other purposes.**\
 
                         if (assignment.dueDate)
                             result = calcTime(assignment.dueDate, info.meta.serverTime, (command[2] == "all"));
-                        else result = "Due without a time limit";
+                        else result = "Due __without a time limit__";
 
                         if (assignment.meta.attachmentCount == 0
                             && assignment["studentAccessLevel"] == "E"
