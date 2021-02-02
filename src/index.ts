@@ -10,272 +10,9 @@ import {
 } from "fs";
 import { createGunzip } from "zlib";
 import { pipeline } from "stream";
-import { createInterface } from "readline";
 
-const rl = createInterface({
-    input: process.stdin,
-    output: process.stdout,
-    prompt: "sb> ",
-    tabSize: 4
-});
+
 const client: Client = new Client();
-const dataPath: string = "data/";
-const baseURL: string = "https://my.showbie.com/core";
-var data: any = {};
-
-updateFiles();
-
-function updateFiles(include?: string[], removeTemp: boolean = true): void {
-    console.log(`INFO: Updating files: ${include == undefined ? `all` : include}`);
-
-    readdirSync(dataPath).forEach((file) => {
-        const name: string[] = file.split(".");
-
-        if (include != undefined && include.includes(name[0]) && name[1] == "json") {
-            data[name[0]] = JSON.parse(readFileSync(dataPath + file).toString());
-            console.log(`SUCCESS: Imported: ${file}`);
-        }
-        else if (include == undefined && name[1] == "json") {
-            data[name[0]] = JSON.parse(readFileSync(dataPath + file).toString());
-            console.log(`SUCCESS: Imported: ${file}`);
-        }
-        else if (removeTemp && name[1] != "json") {
-            rmSync(dataPath + file);
-            console.log(`SUCCESS: Removed file ${file}`);
-        }
-    });
-}
-
-function tob64(string: string): string {
-    console.log(`INFO: Converting ${string} to base64`);
-    return Buffer.from(string).toString('base64');
-}
-
-function fromb64(string: string): string {
-    console.log(`INFO: Converting ${string} from base64`);
-    return Buffer.from(string, 'base64').toString('ascii');
-}
-
-function randomValue(array: any): string {
-    console.log(`INFO: Returning random value from ${array}`);
-    return array[array.length * Math.random() << 0];
-}
-
-function makefp(length: number): string {
-    console.log(`INFO: Made a random fingerprint of length ${length}`);
-
-    let result: string = '';
-    let characters: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let charactersLength: number = characters.length;
-
-    for (let i = 0; i < length; i++)
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-
-    return result;
-}
-
-function calcTime(sub: number, server: number, overdue: boolean = false): string | undefined {
-    const s = (sub - server) / 1000;
-    const pos: boolean = s > 0;
-    if (!overdue && !pos) return;
-
-    let tempString: string = '';
-    const months: number = pos ? Math.floor(s / (3600 * 720)) : Math.ceil(s / (3600 * 720));
-    const monthdays: number = months * 30;
-
-    const days: number = pos ? Math.floor(s / (3600 * 24)) - monthdays : Math.ceil(s / (3600 * 24)) - monthdays;
-    const dayhours: number = (monthdays + days) * 24;
-
-    const hours: number = pos ? Math.floor(s / 3600) - dayhours : Math.ceil(s / 3600) - dayhours;
-    const hourminutes: number = (dayhours + hours) * 60;
-
-    const minutes: number = pos ? Math.floor(s / 60) - hourminutes : Math.ceil(s / 60) - hourminutes;
-
-    const times: object = {
-        "months": months,
-        "days": days,
-        "hours": hours,
-        "minutes": minutes
-    }
-
-    for (const time in times) //@ts-ignore
-        if (times[time]) tempString += `${times[time] < 0 ? times[time] * -1 : times[time]} ${time} `;
-
-    return `${pos ? "Due in  __" : "Overdue by  __"}${tempString}__`;
-}
-
-function makeTokenHeads(
-    user: string,
-    pass: string,
-    school: string = "BHIS"): object {
-    console.log(`INFO: Making token headers for user ${user} in ${school}`);
-    const tempReq: any = data.main.req;
-
-    tempReq["x-showbie-clientapikey"] = data.main.schools[school];
-    tempReq["Authorization"] = `Basic ${tob64(`${user}:${pass}`)}`;
-    tempReq["Content-Type"] = "application/json";
-
-    return tempReq;
-}
-
-function makeAuthHeads(token: string, fp: string, school: string): object {
-    console.log(`INFO: Making auth headers for user in ${school}`);
-    const tempReq: any = data.main.req;
-
-    tempReq["x-showbie-clientapikey"] = data.main.schools[school];
-    tempReq["Authorization"] = `sbe token=${tob64(token)},fp=${tob64(fp)}`;
-    tempReq["Content-Type"] = "application/json";
-
-    return tempReq;
-}
-
-function createSessionEntry(headers: object, userID: string): void {
-    data.sessions[userID] = headers;
-    data.sessions[userID]["Content-Type"] = undefined;
-
-    writeFileSync(dataPath + "sessions.json", JSON.stringify(data.sessions));
-    updateFiles(["sessions"]);
-
-    console.log(`SUCCESS: Created session for userID ${userID}`);
-}
-
-function getFromAPI(
-    userID: string,
-    filename: string,
-    method: string = "GET"): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const req = request(
-            baseURL + "/assignments",
-            {
-                "method": method,
-                "headers": data.sessions[userID]
-            }, res => {
-                pipeline(
-                    res,
-                    createGunzip(),
-                    createWriteStream(dataPath + `${filename}.${userID}.json`),
-                    err => {
-                        if (err) {
-                            console.log(err);
-                            reject(err);
-                        } else {
-                            console.log(`SUCCESS: Wrote to file ${filename}.${userID}.json`);
-                            resolve(dataPath + `${filename}.${userID}.json`);
-                        }
-                    }
-                );
-            });
-        req.end();
-    });
-}
-
-function logout(userID: string): Promise<string> {
-    updateFiles(["sessions"]);
-
-    return new Promise(resolve => {
-        if (data.sessions[userID]) {
-            const sessionToken: string = fromb64(
-                (data.sessions[userID]["Authorization"])
-                    .split(",")[0].slice(10));
-
-            request(baseURL + "/sessions/" + sessionToken, {
-                "method": "DELETE",
-                "headers": data.sessions[userID]
-            }, res => {
-                switch (('' + res.statusCode)[0]) {
-                    case "4":
-                        resolve(`**Error!**\n*Code:* ${res.statusCode}\n*Definition:* ${//@ts-ignore
-                            STATUS_CODES[res.statusCode]}.`);
-
-                    case "2":
-                        delete data.sessions[userID];
-                        writeFileSync(dataPath + "sessions.json", JSON.stringify(data.sessions));
-                        updateFiles(["sessions"]);
-                        resolve("Logged out succesfully!");
-
-                    default: resolve("Could not log out, try again later!");
-                }
-            }).end();
-        }
-        else resolve("No login found! Login first to logout.");
-    });
-}
-
-function login(userID: string, orig: string[]): Promise<string> {
-    return new Promise(resolve => {
-        if (data.sessions[userID]) {
-            resolve(`Session already exists for ${userID}. Logout to delete the session.`); return;
-        }
-        const tempFP = makefp(20);
-        const options: object = {
-            "method": "POST",
-            "headers": makeTokenHeads(orig[2], orig[3], orig[4])
-        };
-
-        const req = request(baseURL + "/sessions", options, res => {
-            console.log(`INFO: Logging in for user ${userID}`);
-
-            let reqData: any = '';
-            res.on('data', chunk => reqData += chunk.toString());
-
-            res.on('close', () => {
-                reqData = JSON.parse(reqData);
-                switch (('' + res.statusCode)[0]) {
-                    case "4":
-                        reqData.errors.forEach((err: any) => {
-                            resolve(`**Error!**\n*Code:* ${err.status}\n*Definition:* ${STATUS_CODES[err.status]}.\n*Meaning:* ${err.title}`);
-                        });
-                        break;
-
-                    case "2":
-                        data.accounts[userID] = {};
-                        data.accounts[userID].user = orig[2];
-                        data.accounts[userID].pass = orig[3];
-                        data.accounts[userID].school =
-                            orig[4] == undefined ? "BHIS" : orig[4];
-
-                        writeFileSync(dataPath + "accounts.json", JSON.stringify(data.accounts));
-
-                        createSessionEntry(
-                            makeAuthHeads(reqData.session.token, tempFP, data.accounts[userID].school),
-                            userID);
-                        resolve("Created session!");
-
-                    default: resolve("Could not log in, try again later!");
-                }
-            });
-        });
-        req.write(JSON.stringify({
-            "session": {
-                "fingerprint": tempFP
-            }
-        }));
-        req.end();
-    });
-}
-
-async function initRegistered(excludes?: string[]): Promise<void> {
-    for (const account in data.accounts) {
-        if (account == "fp") continue;
-        if (excludes?.includes(account)) continue;
-        await login(account, ["", "",
-            data.accounts[account].user,
-            data.accounts[account].pass,
-            data.accounts[account].school])
-            .then((val: string) => console.log(`INFO: ${val}`));
-    }
-}
-
-async function deinitSessions(excludes?: string[]): Promise<void> {
-    for (const account in data.accounts) {
-        if (account == "fp") continue;
-        if (excludes?.includes(account)) continue;
-        await logout(account)
-            .then((val: string) => console.log(`INFO: ${val}`));
-    }
-}
-
-
 client.login(data.discord.token)
     .then(() => console.log("INFO: Started!"))
     .catch((err) => {
@@ -283,29 +20,11 @@ client.login(data.discord.token)
         else console.log("ERROR: Bot couldnt login!");
     });
 
-rl.question("Initialize accounts?", (ans: string) => {
-    if (ans.match(/y/i) || ans.match(/yes/i)) initRegistered().then(() => console.log("Done initializing!"));
-    else if (ans.match(/n/i) || ans.match(/No/i)) return;
-    else console.log("ERROR: Invalid choice!, use init to ask again.");
-});
+const dataPath: string = "data/";
+const baseURL: string = "https://my.showbie.com/core";
+var data: any = {};
 
-rl.on('line', (line: string) => {
-    // const orig: string[] = line.split(" ");
-    const command: string[] = line.toLowerCase().split(" ");
-    switch (command[0]) {
-        case "exit":
-            console.log("INFO: Exiting....");
-            if (command[1] == "logout") deinitSessions().then(() => {
-                console.log("Bye!");
-                process.exit(0);
-            }); else {
-                console.log("Bye!");
-                process.exit(0);
-            }
-
-        default: console.log("ERROR: Command not found!");
-    }
-});
+updateFiles();
 
 client.on("message", (message) => {
     const orig: string[] = message.content.split(" ");
@@ -356,12 +75,12 @@ ShowBot **does not use your account for any other purposes.**\
 
             case "kill":
                 updateFiles(["kills"]);
-                
+
                 if (command[2] == "contribute") {
                     message.channel.send("5 ")
                 }
                 else if (data.kills[command[2]])
-                    message.channel.send(randomValue(data.kills[command[2]]));
+                    message.channel.send(randarrval(data.kills[command[2]]));
 
                 else message.channel.send("Who?");
                 break;
@@ -380,7 +99,7 @@ ShowBot **does not use your account for any other purposes.**\
                         let result: string | undefined;
 
                         if (assignment.dueDate)
-                            result = calcTime(assignment.dueDate, info.meta.serverTime, (command[2] == "all"));
+                            result = calctime(assignment.dueDate, info.meta.serverTime);
                         else result = "Due __without a time limit__";
 
                         if (assignment.meta.attachmentCount == 0
