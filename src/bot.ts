@@ -1,7 +1,8 @@
 import { Client } from "discord.js";
-import * as data from "../data/discord.json";
+import { jsonfr } from "./utils/data";
 
-const client: Client = new Client();
+const data: Discord = jsonfr('../db/discord.json');
+export const client: Client = new Client();
 
 client.login(data.token)
     .then(() => console.log("INFO: Started!"))

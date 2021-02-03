@@ -23,6 +23,10 @@ declare interface Assignment {
 	"hasPremiumOwner": boolean
 }
 
+declare interface Discord {
+	"token": string
+}
+
 declare interface Headers {
 	"Host": "my.showbie.com",
 	"Connection": "keep-alive",
@@ -39,12 +43,40 @@ declare interface Headers {
 }
 
 declare interface Session {
-	"token": string,
-	"school": string
+	"Authorization": string,
+	"x-showbie-clientapikey": string
 }
 
 declare interface Account {
 	"user": string,
+	"sbid": string,
 	"pass": string,
 	"school": string
+}
+
+declare interface Model {
+	"accounts": {
+		[id: string]: Account
+	},
+	"sessions": {
+		[id: string]: Session
+	},
+	"kills": {
+		[name: string]: string[]
+	},
+	"discord": Discord,
+	"main": {
+		"req": Headers,
+		"schools": {
+			[id: string]: string
+		},
+		"studentAccessLevel": {
+			"A": "Assigned"
+		  },
+		  "status": {
+			"E": "Editable",
+			"R": "Readable",
+			"L": "Locked"
+		  }
+	}
 }

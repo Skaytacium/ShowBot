@@ -1,16 +1,16 @@
 {
   "compilerOptions": {           
-    "target": "es5",             
-    "module": "commonjs",        
-    "outDir": "build",           
-    "rootDir": "src",            
+    "target": "es5",
+    "module": "commonjs",
+    "outDir": "build",
+    "rootDir": "src",
     "removeComments": true,
-    "strict": true,              
+    "strict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
     "esModuleInterop": true,
-    "resolveJsonModule": true,   
-    "skipLibCheck": true,         
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   }
 }
