@@ -1,9 +1,9 @@
 import { readFileSync, writeFileSync } from "fs";
 
-export function jsonfr<T>(path: string) {
-    return JSON.parse(readFileSync(path).toString()) as T;
+export function jsonfr(filen: string) {
+    return JSON.parse(readFileSync("db/" + filen + ".json").toString());
 }
 
-export function jsonto(path: string, data: any) {
-    writeFileSync(path, JSON.stringify(data));
+export function jsonto(filen: string, data: any) {
+    writeFileSync("db/" + filen + ".json", JSON.stringify(data));
 }

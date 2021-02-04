@@ -14,22 +14,33 @@ declare interface Assignment {
 	"topic": string,
 	"name": string,
 	"dueDate"?: number,
-	"status": string,
+	"status": Asstatus,
 	"creator": string,
-	"studentAccessLevel": string,
+	"studentAccessLevel": Assacclvl,
 	"studentAccessModifiedDateStamp": number,
 	"lastStudentSubmission": number,
 	"locked": boolean,
 	"hasPremiumOwner": boolean
 }
 
+declare interface Asstatus {
+	"E": "Editable",
+	"R": "Readable",
+	"L": "Locked"
+}
+
+declare interface Assacclvl {
+	"A": "Assigned"
+}
+
 declare interface Discord {
 	"token": string
 }
 
-declare interface Headers {
+declare interface SBHeaders {
 	"Host": "my.showbie.com",
 	"Connection": "keep-alive",
+	"Content-Type": "application/json",
 	"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4343.0 Safari/537.36",
 	"Accept": "application/json",
 	"Accept-Encoding": "gzip",
@@ -43,20 +54,20 @@ declare interface Headers {
 }
 
 declare interface Session {
-	"Authorization": string,
-	"x-showbie-clientapikey": string
+	"token": string,
+	"fp": string,
+	"school": string
 }
 
-declare interface Account {
+declare interface STBAcc {
 	"user": string,
-	"sbid": string,
 	"pass": string,
 	"school": string
 }
 
 declare interface Model {
 	"accounts": {
-		[id: string]: Account
+		[id: string]: STBAcc
 	},
 	"sessions": {
 		[id: string]: Session
@@ -66,17 +77,11 @@ declare interface Model {
 	},
 	"discord": Discord,
 	"main": {
-		"req": Headers,
+		"req": SBHeaders,
 		"schools": {
 			[id: string]: string
 		},
-		"studentAccessLevel": {
-			"A": "Assigned"
-		  },
-		  "status": {
-			"E": "Editable",
-			"R": "Readable",
-			"L": "Locked"
-		  }
+		"studentAccessLevel": Assacclvl,
+		"status": Asstatus
 	}
 }
