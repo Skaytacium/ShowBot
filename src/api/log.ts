@@ -3,6 +3,7 @@ import { request } from 'https'
 import { bschead, tknhead, wsession } from '../utils/api'
 import { STATUS_CODES } from 'http';
 import { jsonto } from '../utils/data';
+import { makefp } from '../utils';
 
 export function login(userID: string, acc: STBAcc) {
 
@@ -11,8 +12,8 @@ export function login(userID: string, acc: STBAcc) {
 
         request("https://my.showbie.com/core/sessions",
             {
-                "method": "POST", //@ts-ignore why?
-                "headers": bschead(orig[2], orig[3], data.main[orig[4]])
+                "method": "POST",
+                "headers": { ...bschead(acc) }
             },
             res => {
                 let recdat: any = '';
@@ -32,6 +33,7 @@ export function login(userID: string, acc: STBAcc) {
 *Meaning:* ${err.title}`;
                             });
                             _rej(terrors)
+                            break;
 
                         case "2":
                             data.accounts[userID] = acc;
@@ -46,6 +48,7 @@ export function login(userID: string, acc: STBAcc) {
                                 },
                                 userID);
                             _res("Logged in and created session!");
+                            break;
 
                         default: _rej("Could not log in, try again later.");
                     }
@@ -65,14 +68,15 @@ export function logout(userID: string) {
         request(
             "https://my.showbie.com/core/sessions/" + data.sessions[userID].token,
             {
-                "method": "DELETE", //@ts-ignore WHY?
-                "headers": tknhead(data.sessions[userID])
+                "method": "DELETE",
+                "headers": { ...tknhead(data.sessions[userID]) }
             },
             res => {
                 switch (('' + res.statusCode)[0]) {
                     case "4":
                         _rej(`**Error:**\n*Code:* ${res.statusCode}\n*Definition:* ${//@ts-ignore Impossible scenario.
                             STATUS_CODES[res.statusCode]}.`);
+                        break;
 
                     case "2":
                         delete data.sessions[userID];
@@ -81,6 +85,7 @@ export function logout(userID: string) {
                         refresh(["sessions"]);
 
                         _res("Logged out succesfully!");
+                        break;
 
                     default: _rej("Could not log out, try again later.");
                 }

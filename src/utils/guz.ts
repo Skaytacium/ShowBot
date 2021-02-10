@@ -8,12 +8,12 @@ export function gun(quick?: Buffer | Uint8Array) {
         if (buf) buf += chunk
         else buf = chunk;
     });
-    dp.on('end', () => dp.emit('out', buf.toString()));
+    dp.on('end', () => dp.emit('out', buf));
 
     if (quick) {
         return new Promise<string>((_res) => {
             dp.end(quick)
-            dp.on('out', val => _res(val.toString()))
+            dp.on('out', val => _res(val))
         });
     }
 

@@ -1,0 +1,35 @@
+{
+    "help": {
+        "help": "Show this message. Any parameter which has a `?` is optional, its default value follows the `?`.",
+        "login": "Send login message.",
+        "logout": "Log out of current account. No need to use `sb creds` to login again next time, just do `sb login`.",
+        "creds <user> <pass> <school?BHIS>": "Log in using the specified credentials.",
+        "ass": {
+            "main": "Show assignments menu.",
+            "all": "Show all pending and overdue assignments.",
+            "pen": "Show currently pending assignments.",
+            "late": "Show overdue assignments."
+        },
+        "search <options?none> <query>": {
+            "main": "Show search menu. Options start with `!!` to avoid searching for them. To specify multiple options, use !!(option 1)!!(option 2)!!(option 3) and so on.",
+            "!!cs": "Search case sensitively.",
+            "!!sub <class>": "Search in that specific class. For eg. `sb search !!cs!!sub Biology Worksheet 10` will search for 'Worksheet 10' case sensitively in the class 'Biology'"
+        },
+        "list": {
+            "main": "Show list menu.",
+            "ass": "List all assignments.",
+            "sub": "List all classes."
+        },
+        "view <id>": "View an assignment with id `<id>`.",
+        "upload <id>": "Upload an assignment to id `<id>`.",
+        "download <id>": "Receive an assignment with id `<id>`.",
+        "roadmap": "Show planned features and (semantic) version."
+    },
+    "roadmap": [
+        "Add control panel on https://skaytacium.com/showbot",
+        "Encrypted database",
+        "More commands",
+        "Better README, DEVELOP and INSTALL",
+        "Documentation"
+    ]
+}

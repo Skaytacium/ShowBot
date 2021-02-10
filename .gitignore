@@ -2,5 +2,6 @@ node_modules
 package-lock.json
 db/*
 !main.json
+!info.json
 build
 test*

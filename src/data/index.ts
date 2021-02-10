@@ -13,3 +13,15 @@ export function refresh(include?: ["accounts" | "kills" | "sessions"]) {
         data.sessions = jsonfr("sessions")
     }
 }
+
+function init() {
+    data = {
+        accounts: jsonfr("accounts"),
+        discord: jsonfr("discord"),
+        main: jsonfr("main"),
+        sessions: jsonfr("sessions"),
+        kills: jsonfr("kills")
+    }
+}
+
+init();

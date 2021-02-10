@@ -1,7 +1,7 @@
 import { createInterface } from "readline";
 import { init, deinit } from "../api/seshman"
 
-const rl = createInterface({
+export const rl = createInterface({
     input: process.stdin,
     output: process.stdout,
     tabSize: 4,
@@ -9,9 +9,8 @@ const rl = createInterface({
     terminal: true
 })
 
-rl.question("Initialize accounts?", ans => {
-
-    if (ans == 'y' || 'Y') init();
+rl.question("Initialize accounts?   ", ans => {
+    if (ans == ('y' || 'Y')) init();
 
     else return;
 });
@@ -21,7 +20,13 @@ rl.on('line', (line: string) => {
 
     switch (command[0]) {
         case "q":
-            console.log("Bye!");
+            console.log("Bye.");
             process.exit(0);
+
+        case "deinit":
+            deinit();
+            break;
+
+        default: console.log("NF");
     }
 });

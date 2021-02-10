@@ -1,16 +1,16 @@
-function tob64(string: string) {
+export function tob64(string: string) {
     return Buffer.from(string).toString('base64');
 }
 
-function fromb64(string: string) {
+export function fromb64(string: string) {
     return Buffer.from(string, 'base64').toString('ascii');
 }
 
-function ranval(array: any) {
+export function ranval(array: any) {
     return array[array.length * Math.random() << 0];
 }
 
-function makefp(length: number) {
+export function makefp(length: number) {
     let result = '';
     let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let charactersLength = characters.length;
@@ -21,7 +21,7 @@ function makefp(length: number) {
     return result;
 }
 
-function ctime(sub: number, server: number) {
+export function ctime(sub: number, server: number) {
     const s = (sub - server) / 1000;
     const pos: boolean = s > 0;
 

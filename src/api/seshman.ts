@@ -9,6 +9,8 @@ export function init(excludes?: string[]) {
         if (excludes?.includes(account)) continue;
 
         login(account, data.accounts[account])
+        .then(console.log)
+        .catch(console.log)
     }
 }
 
@@ -21,5 +23,7 @@ export function deinit(excludes?: string[]) {
         if (excludes?.includes(account)) continue;
 
         logout(account)
+        .then(console.log)
+        .catch(console.log)
     }
 }
