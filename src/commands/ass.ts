@@ -2,7 +2,7 @@ import { MessageEmbed } from "discord.js";
 import cloneDeep from "lodash.clonedeep";
 import { basembed } from ".";
 import { sbreq } from "../api";
-import { data } from "../data";
+import { data, refresh } from "../data";
 import { SBCommand, SBCommandParams } from "../typings/showbie/custom";
 import { ctime } from "../utils";
 
@@ -27,20 +27,29 @@ export default {
 
 function dispatch(params: SBCommandParams) {
     return new Promise<MessageEmbed>((_res, _rej) => {
+        refresh(["sessions"])
+
         let assembed = cloneDeep(basembed)
 
         if (!data.sessions[params.userid])
             _rej(assembed.setTitle("No login found."))
 
-        else sbreq(params.userid, "assignments").then((info: {
-            "meta": {
-                "serverTime": number
-            },
-            "assignments": SBAssignment[]
-        }) => {
-            info.assignments.forEach((assignment) => {
-                console.log(assignment.name);
+        else sbreq(params.userid, "assignments")
+            .then((info: {
+                "meta": {
+                    "serverTime": number
+                },
+                "assignments": SBAssignment[]
+            }) => {
+                info.assignments.forEach((ass) => {
+                    if (assembed.length < 5000)
+                        assembed.addField(
+                            ass.name,
+                            `[${"Find it here"}](https://my.showbie.com/assignments/${ass.id}/posts)`,
+                            true
+                        )
+                    else _res(assembed);
+                });
             });
-        }, console.log);
     });
 }

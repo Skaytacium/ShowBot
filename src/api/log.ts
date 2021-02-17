@@ -84,7 +84,7 @@ export function logout(userID: string) {
                         jsonto("sessions", data.sessions);
                         refresh(["sessions"]);
 
-                        _res("Logged out succesfully!");
+                        _res("Logged out succesfully.");
                         break;
 
                     default: _rej("Could not log out, try again later.");
