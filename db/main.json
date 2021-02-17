@@ -1,4 +1,5 @@
 {
+  "prefix": "sb",
   "req": {
     "Host": "my.showbie.com",
     "Connection": "keep-alive",

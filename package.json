@@ -1,17 +1,16 @@
 {
   "name": "showbot",
-  "version": "1.0.0",
-  "description": "A discord bot to talk to showbie",
+  "version": "0.13.2",
+  "description": "The Showbie API wrapper + Discord bot",
   "main": "build/main.js",
   "dependencies": {
+    "@types/lodash.clonedeep": "^4.5.6",
     "discord.js": "^12.5.1",
-    "typescript": "^4.1.3"
+    "lodash.clonedeep": "^4.5.0",
+    "typescript": "^4.1.4"
   },
   "devDependencies": {
-    "@types/node": "^14.14.22"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "@types/node": "^14.14.25"
   },
   "repository": {
     "type": "git",

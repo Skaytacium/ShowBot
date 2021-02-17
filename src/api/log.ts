@@ -47,7 +47,7 @@ export function login(userID: string, acc: STBAcc) {
                                     school: data.accounts[userID].school
                                 },
                                 userID);
-                            _res("Logged in and created session!");
+                            _res("Logged in and created session.");
                             break;
 
                         default: _rej("Could not log in, try again later.");

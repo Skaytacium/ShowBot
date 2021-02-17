@@ -5,7 +5,7 @@ import { data } from "../data";
 import { STATUS_CODES } from "http";
 import { Gunzip } from "zlib";
 
-export function sbreq(userID: string, path: string, method: string = "GET"): Promise<string> {
+export function sbreq(userID: string, path: string, method: string = "GET"): Promise<any> {
     return new Promise((_res, _rej) => {
         request(
             "https://my.showbie.com/core/" + path,

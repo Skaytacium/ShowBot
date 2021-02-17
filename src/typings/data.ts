@@ -24,6 +24,7 @@ interface Model {
 	"kills": Dict<string[]>,
 	"discord": Discord,
 	"main": {
+		"prefix": string,
 		"req": SBHeaders,
 		"schools": Dict<string>,
 		"studentAccessLevel": Assacclvl,
