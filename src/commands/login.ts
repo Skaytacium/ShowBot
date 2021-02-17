@@ -30,8 +30,22 @@ function dispatch(params: {
     return new Promise<MessageEmbed>((_res, _rej) => {
         refresh(["sessions"])
 
-        if (params.userid in data.sessions) _rej(basembed.setTitle("You have already logged in."));
-        else if (!params.orig[0]) _rej(basembed.setTitle("No username and/or password found."));
+        if (params.userid in data.sessions)
+            _rej(basembed.setTitle("You have already logged in."));
+
+        else if (!params.orig[0] && params.userid in data.accounts)
+            login(params.userid, data.accounts[params.userid])
+                .then(val => _res(basembed
+                    .setTitle(val)
+                    .setDescription("Used already existing account creds.")
+                ))
+                .catch(val => _rej(basembed
+                    .setTitle(val)
+                    .setDescription("Used already existing account creds.")
+                ))
+
+        else if (!params.orig[0])
+            _rej(basembed.setTitle("No username and/or password found."));
 
         else login(params.userid, {
             user: params.orig[0],

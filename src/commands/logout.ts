@@ -12,7 +12,7 @@ export default {
 function dispatch(params: SBCommandParams) {
     return new Promise<MessageEmbed>((_res, _rej) => {
         refresh(["sessions"])
-        console.log(data.sessions)
+        
         if (!(params.userid in data.sessions)) _rej(basembed.setTitle("You have not logged in."));
 
         else logout(params.userid)
