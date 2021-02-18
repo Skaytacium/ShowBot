@@ -1,10 +1,10 @@
 dependencies:
-  '@types/lodash.clonedeep': 4.5.6
   discord.js: 12.5.1
   lodash.clonedeep: 4.5.0
-  typescript: 4.1.4
+  typescript: 4.1.5
 devDependencies:
-  '@types/node': 14.14.25
+  '@types/lodash.clonedeep': 4.5.6
+  '@types/node': 14.14.28
 lockfileVersion: 5.2
 packages:
   /@discordjs/collection/0.1.6:
@@ -15,7 +15,7 @@ packages:
     dependencies:
       asynckit: 0.4.0
       combined-stream: 1.0.8
-      mime-types: 2.1.28
+      mime-types: 2.1.29
     dev: false
     engines:
       node: '>= 6'
@@ -24,17 +24,17 @@ packages:
   /@types/lodash.clonedeep/4.5.6:
     dependencies:
       '@types/lodash': 4.14.168
-    dev: false
+    dev: true
     resolution:
       integrity: sha512-cE1jYr2dEg1wBImvXlNtp0xDoS79rfEdGozQVgliDZj1uERH4k+rmEMTudP9b4VQ8O6nRb5gPqft0QzEQGMQgA==
   /@types/lodash/4.14.168:
-    dev: false
-    resolution:
-      integrity: sha512-oVfRvqHV/V6D1yifJbVRU3TMp8OT6o6BG+U9MkwuJ3U8/CsDHvalRpsxBqivn71ztOFZBTfJMvETbqHiaNSj7Q==
-  /@types/node/14.14.25:
     dev: true
     resolution:
-      integrity: sha512-EPpXLOVqDvisVxtlbvzfyqSsFeQxltFbluZNRndIb8tr9KiBnYNLzrc1N3pyKUCww2RNrfHDViqDWWE1LCJQtQ==
+      integrity: sha512-oVfRvqHV/V6D1yifJbVRU3TMp8OT6o6BG+U9MkwuJ3U8/CsDHvalRpsxBqivn71ztOFZBTfJMvETbqHiaNSj7Q==
+  /@types/node/14.14.28:
+    dev: true
+    resolution:
+      integrity: sha512-lg55ArB+ZiHHbBBttLpzD07akz0QPrZgUODNakeC09i62dnrywr9mFErHuaPlB6I7z+sEbK+IYmplahvplCj2g==
   /abort-controller/3.0.0:
     dependencies:
       event-target-shim: 5.0.1
@@ -67,7 +67,7 @@ packages:
       '@discordjs/form-data': 3.0.1
       abort-controller: 3.0.0
       node-fetch: 2.6.1
-      prism-media: 1.2.5
+      prism-media: 1.2.7
       setimmediate: 1.0.5
       tweetnacl: 1.0.3
       ws: 7.4.3
@@ -86,27 +86,27 @@ packages:
     dev: false
     resolution:
       integrity: sha1-4j8/nE+Pvd6HJSnBBxhXoIblzO8=
-  /mime-db/1.45.0:
+  /mime-db/1.46.0:
     dev: false
     engines:
       node: '>= 0.6'
     resolution:
-      integrity: sha512-CkqLUxUk15hofLoLyljJSrukZi8mAtgd+yE5uO4tqRZsdsAJKv0O+rFMhVDRJgozy+yG6md5KwuXhD4ocIoP+w==
-  /mime-types/2.1.28:
+      integrity: sha512-svXaP8UQRZ5K7or+ZmfNhg2xX3yKDMUzqadsSqi4NCH/KomcH75MAMYAGVlvXn4+b/xOPhS3I2uHKRUzvjY7BQ==
+  /mime-types/2.1.29:
     dependencies:
-      mime-db: 1.45.0
+      mime-db: 1.46.0
     dev: false
     engines:
       node: '>= 0.6'
     resolution:
-      integrity: sha512-0TO2yJ5YHYr7M2zzT7gDU1tbwHxEUWBCLt0lscSNpcdAfFyJOVEpRYNS7EXVcTLNj/25QO8gulHC5JtTzSE2UQ==
+      integrity: sha512-Y/jMt/S5sR9OaqteJtslsFZKWOIIqMACsJSiHghlCAyhf7jfVYjKBmLiX8OgpWeW+fjJ2b+Az69aPFPkUOY6xQ==
   /node-fetch/2.6.1:
     dev: false
     engines:
       node: 4.x || >=6.0.0
     resolution:
       integrity: sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
-  /prism-media/1.2.5:
+  /prism-media/1.2.7:
     dev: false
     peerDependencies:
       '@discordjs/opus': ^0.4.0
@@ -123,7 +123,7 @@ packages:
       opusscript:
         optional: true
     resolution:
-      integrity: sha512-YqSnMCugv+KUNE9PQec48Dq22jSxB/B6UcfD9jTpPN1Mbuh+RqELdTJmRPj106z3aa8ZuXrWGQllXPeIGmKbvw==
+      integrity: sha512-thS1z3L6BDmf724sqLC73bHGjSYArFTYHa7cqInyS3EdDNTHKgDCXy7l+IhRvlnX7aFNiUb8jJcC+R8ezxwgMA==
   /setimmediate/1.0.5:
     dev: false
     resolution:
@@ -132,13 +132,13 @@ packages:
     dev: false
     resolution:
       integrity: sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==
-  /typescript/4.1.4:
+  /typescript/4.1.5:
     dev: false
     engines:
       node: '>=4.2.0'
     hasBin: true
     resolution:
-      integrity: sha512-+Uru0t8qIRgjuCpiSPpfGuhHecMllk5Zsazj5LZvVsEStEjmIRRBZe+jHjGQvsgS7M1wONy2PQXd67EMyV6acg==
+      integrity: sha512-6OSu9PTIzmn9TCDiovULTnET6BgXtDYL4Gg4szY+cGsc3JP1dQL8qvE8kShTRx1NIw4Q9IBHlwODjkjWEtMUyA==
   /ws/7.4.3:
     dev: false
     engines:
@@ -155,7 +155,7 @@ packages:
       integrity: sha512-hr6vCR76GsossIRsr8OLR9acVVm1jyfEWvhbNjtgPOrfvAlKzvyeg/P6r8RuDjRyrcQoPQT7K0DGEPc7Ae6jzA==
 specifiers:
   '@types/lodash.clonedeep': ^4.5.6
-  '@types/node': ^14.14.25
+  '@types/node': ^14.14.28
   discord.js: ^12.5.1
   lodash.clonedeep: ^4.5.0
-  typescript: ^4.1.4
+  typescript: ^4.1.5

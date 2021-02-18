@@ -26,22 +26,26 @@ function getcommands(): Dict<SBCommand> {
 }
 
 client.login(data.discord.token)
-    .then(() => {
-        console.log("Logged in.");
-        client.user?.setPresence({
-            activity: {
-                name: `${data.main.prefix} help`,
-                type: "LISTENING"
-            },
-            status: "dnd"
-        })
-        basembed.setAuthor(
-            client.user?.username,
-            client.user?.displayAvatarURL(),
-            "https://github.com/Skaytacium/ShowBot"
-        )
-    })
+    .then(() => console.log("Logged in."))
     .catch((err) => {
         if (err) console.error(err);
         else console.error("Bot couldnt login.");
     });
+
+client.on('ready', () => {
+    console.log("Ready.");
+
+    client.user?.setPresence({
+        activity: {
+            name: `${data.main.prefix} help`,
+            type: "LISTENING"
+        },
+        status: "dnd"
+    });
+
+    basembed.setAuthor(
+        client.user?.username,
+        client.user?.displayAvatarURL(),
+        "https://github.com/Skaytacium/ShowBot"
+    );
+})

@@ -38,10 +38,10 @@ export function ctime(sub: number, server: number) {
     const mins = pos ? Math.floor(s / 60) - hmins : Math.ceil(s / 60) - hmins;
 
     const times = {
-        "months": months,
-        "days": days,
-        "hours": hrs,
-        "minutes": mins
+        "month(s)": months,
+        "day(s)": days,
+        "hour(s)": hrs,
+        "minute(s)": mins
     }
 
     for (const time in times) //@ts-ignore bruh this is so retarded

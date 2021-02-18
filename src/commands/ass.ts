@@ -7,7 +7,7 @@ import { SBCommand, SBCommandParams } from "../typings/showbie/custom";
 import { ctime } from "../utils";
 
 export default {
-    base: "Shows non-submitted assignments menu.",
+    base: "Shows all assignments.",
     det: "Displays a menu which handles all non-submitted assignment tasks via reactions.",
     opts: [{
         name: "pen",
@@ -16,10 +16,6 @@ export default {
     }, {
         name: "old",
         base: "Shows overdue assignments.",
-        opt: true
-    }, {
-        name: "all",
-        base: "Shows pending and overdue assignments.",
         opt: true
     }],
     get: dispatch
@@ -41,14 +37,17 @@ function dispatch(params: SBCommandParams) {
                 },
                 "assignments": SBAssignment[]
             }) => {
-                info.assignments.forEach((ass) => {
+                assembed.setTitle("Assignments");
+                if (params.orig[0]) {
+
+                } else info.assignments.forEach((ass) => {
                     if (assembed.length < 5500)
                         assembed.addField(
                             ass.name, //Sorry vim users, gotta do it this one time.
-                            `[ID: ${ass.id}, ${ass.meta.attachmentCount ? 'Submitted ' + ctime(ass.dueDate, info.meta.serverTime) + ' ago' : (ass.dueDate > info.meta.serverTime ? 'Due in ' : 'Overdue by ') + ctime(ass.dueDate, info.meta.serverTime)}](https://my.showbie.com/assignments/${ass.id}/posts)`,
+                            `[${ass.meta.attachmentCount ? 'Submitted ' + ctime(ass.dueDate, info.meta.serverTime) + ' ago' : (ass.dueDate > info.meta.serverTime ? 'Due in ' : 'Overdue by ') + ctime(ass.dueDate, info.meta.serverTime)}](https://my.showbie.com/assignments/${ass.id}/posts)`,
                             false
                         )
-                    else _res(assembed);
+                    else _res(assembed.setTitle("Assignments, Page " + '1' /*I will add more pages soon*/));
                 });
             });
     });
