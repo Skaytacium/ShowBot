@@ -21,7 +21,7 @@ interface SBAssignment {
 	"class": string,
 	"topic": string,
 	"name": string,
-	"dueDate"?: number,
+	"dueDate": number,
 	"status": Asstatus,
 	"creator": string,
 	"studentAccessLevel": Assacclvl,

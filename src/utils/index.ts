@@ -23,7 +23,7 @@ export function makefp(length: number) {
 
 export function ctime(sub: number, server: number) {
     const s = (sub - server) / 1000;
-    const pos: boolean = s > 0;
+    const pos = s > 0;
 
     let tmpstr = '';
     const months = pos ? Math.floor(s / (3600 * 720)) : Math.ceil(s / (3600 * 720));
@@ -44,7 +44,7 @@ export function ctime(sub: number, server: number) {
         "minutes": mins
     }
 
-    for (const time in times) //@ts-ignore
+    for (const time in times) //@ts-ignore bruh this is so retarded
         if (times[time]) tmpstr += `${times[time] < 0 ? times[time] * -1 : times[time]} ${time} `;
 
     return tmpstr;

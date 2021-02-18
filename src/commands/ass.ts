@@ -42,11 +42,11 @@ function dispatch(params: SBCommandParams) {
                 "assignments": SBAssignment[]
             }) => {
                 info.assignments.forEach((ass) => {
-                    if (assembed.length < 5000)
+                    if (assembed.length < 5500)
                         assembed.addField(
-                            ass.name,
-                            `[${"Find it here"}](https://my.showbie.com/assignments/${ass.id}/posts)`,
-                            true
+                            ass.name, //Sorry vim users, gotta do it this one time.
+                            `[ID: ${ass.id}, ${ass.meta.attachmentCount ? 'Submitted ' + ctime(ass.dueDate, info.meta.serverTime) + ' ago' : (ass.dueDate > info.meta.serverTime ? 'Due in ' : 'Overdue by ') + ctime(ass.dueDate, info.meta.serverTime)}](https://my.showbie.com/assignments/${ass.id}/posts)`,
+                            false
                         )
                     else _res(assembed);
                 });
