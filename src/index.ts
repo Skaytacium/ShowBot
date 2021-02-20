@@ -1,7 +1,6 @@
 import { basembed, client, commands } from './commands'
 import { data } from './data'
 import { init, deinit } from "./api/seshman"
-import { ClientUser } from 'discord.js';
 
 process.stdin.on('data', raw => {
     const line = raw.toString().trim()
@@ -53,10 +52,3 @@ client.on('message', message => {
         }
     }
 });
-
-client.on('messageReactionAdd', (react, user) => { // Its impossible that someone reacts before the bot starts, hopefully /s
-    if (user.id == (client.user as ClientUser).id) return;
-    else {
-        
-    }
-})

@@ -1,10 +1,11 @@
 {
   "name": "showbot",
-  "version": "0.14.3",
+  "version": "0.15.1",
   "description": "The Showbie API wrapper + Discord bot",
   "main": "build/main.js",
   "dependencies": {
     "discord.js": "^12.5.1",
+    "fuse.js": "^6.4.6",
     "lodash.clonedeep": "^4.5.0",
     "typescript": "^4.1.5"
   },

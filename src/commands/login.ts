@@ -9,12 +9,10 @@ export default {
     base: "Logs in to your account securely.",
     opts: [{
         name: "username",
-        base: "Your Showbie username to login with.",
-        opt: false
+        base: "Your Showbie username to login with."
     }, {
         name: "password",
-        base: "Your Showbie password to login with.",
-        opt: false
+        base: "Your Showbie password to login with."
     }, {
         name: "school",
         base: "The school that you are in. Default is BHIS.",

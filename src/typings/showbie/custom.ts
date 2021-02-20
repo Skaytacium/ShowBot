@@ -1,8 +1,8 @@
-import { MessageEmbed } from "discord.js";
+import { CollectorFilter, MessageEmbed } from "discord.js";
 
 export declare interface SBCommandParams {
 	orig: string[], //This is a bdd way to provide parameter types, as it
-	userid: string //makes it globally available, but thats ok.
+	userid: string  //makes it globally available, but thats ok.
 }
 export declare interface SBCommand {
 	base: string,
