@@ -16,15 +16,14 @@ export default {
 } as SBCommand
 
 function dispatch(params: SBCommandParams) {
-    const fpembed = cloneDeep(basembed)
-
-    return new Promise<(string | MessageEmbed)[]>(async (_res, _rej) => {
+    return new Promise<MessageEmbed[]>(async (_res, _rej) => {
+        const fpembed = cloneDeep(basembed)
 
         if (!data.sessions[params.userid]) _rej(fpembed.setTitle("Log in first."))
         if (!params.orig[0]) _rej(fpembed.setTitle("No ID specified."))
 
         if (params.orig[0].includes("-")) {
-            let sendimgs: string[] = []
+            let sendimgs: MessageEmbed[] = []
 
             const mediareq: {
                 "media": {
@@ -34,12 +33,13 @@ function dispatch(params: SBCommandParams) {
                     }[],
                     "status": string
                 }
-            } = await sbreq(params.userid, `folder-posts/${params.orig[0]}/media`)
+            } = await sbreq(params.userid, `folder-posts/${params.orig[0]}/media`).catch(_rej)
 
+            if (!mediareq || !mediareq.media.pages) return;
             if (mediareq.media.status != "COMPLETE") _rej(fpembed.setTitle("Conversion not complete yet, try again in a bit."))
 
             else mediareq.media.pages.forEach(pg => {
-                sendimgs.push(pg.baseUrl)
+                sendimgs.push(cloneDeep(basembed).setTitle(`Page no. ${pg.page}`).setImage(pg.baseUrl))
             });
 
             _res(sendimgs)
@@ -51,7 +51,7 @@ function dispatch(params: SBCommandParams) {
                 }[]
             } = await sbreq(params.userid, `assignments/${params.orig[0]}`).catch(_rej);
 
-            if (!assreq) return
+            if (!assreq || !assreq.assignment) return
 
             const folderpostsreq: {
                 "folderPosts": {

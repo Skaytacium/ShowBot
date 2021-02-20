@@ -4,6 +4,8 @@ import { tknhead } from "../utils/api";
 import { data } from "../data";
 import { STATUS_CODES } from "http";
 import { Gunzip } from "zlib";
+import cloneDeep from "lodash.clonedeep";
+import { basembed } from "../commands";
 
 export function sbreq(userID: string, path: string, method: string = "GET"): Promise<any> {
     return new Promise((_res, _rej) => {
@@ -29,11 +31,16 @@ export function sbreq(userID: string, path: string, method: string = "GET"): Pro
                                 break;
 
                             case "4":
-                                _rej(`**Error:**\n\
-*Code:* ${res.statusCode}\n\
-*Meaning:* ${val.errors[0].title}
-*Definition:* ${STATUS_CODES[res.statusCode ? res.statusCode : 404]}.\
-`);
+                                _rej(cloneDeep(basembed).setTitle("Error").addFields([{
+                                    name: "Code",
+                                    value: res.statusCode
+                                }, {
+                                    name: "Definition",
+                                    value: STATUS_CODES[res.statusCode ? res.statusCode : 404]
+                                }, {
+                                    name: "Meaning",
+                                    value: val.errors ? val.errors[0].title : "No meaning sent from server."
+                                }]));
                                 break;
 
                             default: _rej("Could process request, try again later.");

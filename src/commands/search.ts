@@ -23,7 +23,9 @@ function dispatch(params: SBCommandParams) {
         const searchembed = cloneDeep(basembed);
 
         if (!data.sessions[params.userid])
-            _rej(searchembed.setTitle("No login found."))
+            return _rej(searchembed.setTitle("No login found."))
+        
+        if (!params.orig[0]) return _rej(searchembed.setTitle("Query cannot be blank."))
 
         else sbreq(params.userid, "assignments")
             .then((info: { "meta": { "serverTime": number }, "assignments": SBAssignment[] }) => {
