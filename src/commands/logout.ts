@@ -13,13 +13,13 @@ export default {
 function dispatch(params: SBCommandParams) {
     const logembed = cloneDeep(basembed);
 
-    return new Promise<MessageEmbed>((_res, _rej) => {
+    return new Promise<MessageEmbed[]>((_res, _rej) => {
         refresh(["sessions"])
 
         if (!(params.userid in data.sessions)) _rej(logembed.setTitle("You have not logged in."));
 
         else logout(params.userid)
-            .then(val => _res(logembed.setTitle(val)))
+            .then(val => _res([logembed.setTitle(val)]))
             .catch(val => _rej(logembed.setTitle(val)))
     });
 }

@@ -29,9 +29,10 @@ export default {
 } as SBCommand
 
 function dispatch(params: SBCommandParams) {
-    return new Promise<MessageEmbed>((_res, _rej) => {
+    return new Promise<MessageEmbed[]>((_res, _rej) => {
         refresh(["sessions"])
 
+        let final: MessageEmbed[] = [];
         let assembed = cloneDeep(basembed)
 
         if (!data.sessions[params.userid])
@@ -48,10 +49,17 @@ function dispatch(params: SBCommandParams) {
                             `[${ass.meta.attachmentCount ? 'Submitted ' + ctime(ass.dueDate, info.meta.serverTime) + ' ago' : (ass.dueDate > info.meta.serverTime ? 'Due in ' : 'Overdue by ') + ctime(ass.dueDate, info.meta.serverTime)}](https://my.showbie.com/assignments/${ass.id}/posts)`
                         );
 
-                    else _res(assembed);
+                    else {
+                        final.push(assembed)
+                        assembed.fields = []
+                        assembed.addField(
+                            `${ass.name}, ID: ${ass.id}`, //Sorry vim users, gotta do it this second time.
+                            `[${ass.meta.attachmentCount ? 'Submitted ' + ctime(ass.dueDate, info.meta.serverTime) + ' ago' : (ass.dueDate > info.meta.serverTime ? 'Due in ' : 'Overdue by ') + ctime(ass.dueDate, info.meta.serverTime)}](https://my.showbie.com/assignments/${ass.id}/posts)`
+                        );
+                    };
                 });
 
-                _res(assembed);
+                _res(final);
             });
     });
 }
@@ -68,7 +76,14 @@ function approve(servertime: number, assignment: SBAssignment, msg: string[]) {
             if (servertime > assignment.dueDate) truthy++;
             else truthy = 0
         }
-    }
+    } else truthy++;
+
+    // console.log({
+    //     "st": servertime,
+    //     "add": assignment.dueDate,
+    //     "ac": assignment.meta.attachmentCount,
+    //     "truthy": truthy
+    // })
 
     return truthy
 }

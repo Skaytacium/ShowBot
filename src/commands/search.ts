@@ -17,7 +17,7 @@ export default {
 } as SBCommand
 
 function dispatch(params: SBCommandParams) {
-    return new Promise<MessageEmbed>((_res, _rej) => {
+    return new Promise<MessageEmbed[]>((_res, _rej) => {
         refresh(["sessions"])
 
         const searchembed = cloneDeep(basembed);
@@ -33,7 +33,7 @@ function dispatch(params: SBCommandParams) {
                     keys: ['name']
                 }).search(query);
                 
-                if (!results.length) _res(searchembed.setTitle("No search results found for " + query))
+                if (!results.length) _res([searchembed.setTitle("No search results found for " + query)])
                 else searchembed.setTitle("Search results for " + query);
 
                 results.forEach(rul => {
@@ -42,10 +42,10 @@ function dispatch(params: SBCommandParams) {
                             `${rul.item.name}, ID: ${rul.item.id}`, 
                             `[${rul.item.meta.attachmentCount ? 'Submitted ' + ctime(rul.item.dueDate, info.meta.serverTime) + ' ago' : (rul.item.dueDate > info.meta.serverTime ? 'Due in ' : 'Overdue by ') + ctime(rul.item.dueDate, info.meta.serverTime)}](https://my.showbie.com/assignments/${rul.item.id}/posts)`
                         )
-                    else _res(searchembed)
+                    else _res([searchembed])
                 });
 
-                _res(searchembed)
+                _res([searchembed])
             });
     })
 }

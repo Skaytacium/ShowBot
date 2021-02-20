@@ -15,7 +15,7 @@ export default {
 } as SBCommand
 
 function dispatch() {
-    return new Promise<MessageEmbed>((_res) => {
+    return new Promise<MessageEmbed[]>((_res) => {
         let helpembed = cloneDeep(basembed);
 
         helpembed.setTitle("Help/Information")
@@ -41,6 +41,6 @@ If two or more incompatible modifiers or commands are specified, the result migh
             }
         }
 
-        _res(helpembed);
+        _res([helpembed]);
     })
 }

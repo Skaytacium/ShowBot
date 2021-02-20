@@ -1,4 +1,4 @@
-import { CollectorFilter, MessageEmbed } from "discord.js";
+import { APIMessage, MessageEmbed } from "discord.js";
 
 export declare interface SBCommandParams {
 	orig: string[], //This is a bdd way to provide parameter types, as it
@@ -13,5 +13,5 @@ export declare interface SBCommand {
 		opt?: boolean,
 		det?: string
 	}[],
-	get: (params: SBCommandParams) => Promise<string | MessageEmbed>
+	get: (params: SBCommandParams) => Promise<(string | MessageEmbed)[]>
 }

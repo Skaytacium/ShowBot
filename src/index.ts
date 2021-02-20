@@ -37,8 +37,8 @@ client.on('message', message => {
                 orig: orig,
                 userid: message.author.id
             })
-                .then(a => {
-                    message.channel.send(a);
+                .then(a => { //@ts-ignore no no this is fine, **i think**
+                    a.forEach(b => message.channel.send(b));
                     message.channel.stopTyping();
                 })
                 .catch(a => {

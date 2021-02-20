@@ -26,34 +26,34 @@ function dispatch(params: {
     orig: string[],
     userid: string
 }) {
-    return new Promise<MessageEmbed>((_res, _rej) => {
+    return new Promise<MessageEmbed[]>((_res, _rej) => {
         const logembed = cloneDeep(basembed);
 
         refresh(["sessions"])
 
         if (params.userid in data.sessions)
-            _rej(logembed.setTitle("You have already logged in."));
+            return _rej(logembed.setTitle("You have already logged in."));
 
         else if (!params.orig[0] && params.userid in data.accounts)
             login(params.userid, data.accounts[params.userid])
-                .then(val => _res(logembed
+                .then(val => _res([logembed
                     .setTitle(val)
                     .setDescription("Used already existing account creds.")
-                ))
+                ]))
                 .catch(val => _rej(logembed
                     .setTitle(val)
                     .setDescription("Used already existing account creds.")
                 ))
 
         else if (!params.orig[0])
-            _rej(logembed.setTitle("No username and/or password found."));
+            return _rej(logembed.setTitle("No username and/or password found."));
 
         else login(params.userid, {
             user: params.orig[0],
             pass: params.orig[1],
             school: params.orig[2] ? params.orig[2] : "BHIS"
         })
-            .then(val => _res(logembed.setTitle(val)))
+            .then(val => _res([logembed.setTitle(val)]))
             .catch(val => _rej(logembed.setTitle(val)))
     });
 }
