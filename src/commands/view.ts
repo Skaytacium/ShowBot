@@ -19,7 +19,7 @@ function dispatch(params: SBCommandParams) {
     return new Promise<MessageEmbed[]>(async (_res, _rej) => {
         const fpembed = cloneDeep(basembed)
 
-        if (!data.sessions[params.userid]) _rej(fpembed.setTitle("Log in first."))
+        if (!data.sessions[params.userid]) return _rej(fpembed.setTitle("Log in first."))
         if (!params.orig[0]) return _rej(fpembed.setTitle("No ID specified."))
 
         if (params.orig[0].includes("-")) {
@@ -36,7 +36,7 @@ function dispatch(params: SBCommandParams) {
             } = await sbreq(params.userid, `folder-posts/${params.orig[0]}/media`).catch(_rej)
 
             if (!mediareq || !mediareq.media.pages) return;
-            if (mediareq.media.status != "COMPLETE") _rej(fpembed.setTitle("Conversion not complete yet, try again in a bit."))
+            if (mediareq.media.status != "COMPLETE") return _rej(fpembed.setTitle("Conversion not complete yet, try again in a bit."))
 
             else mediareq.media.pages.forEach(pg => {
                 sendimgs.push(cloneDeep(basembed).setTitle(`Page no. ${pg.page}`).setImage(pg.baseUrl))
