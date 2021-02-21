@@ -20,7 +20,7 @@ function dispatch(params: SBCommandParams) {
         const fpembed = cloneDeep(basembed)
 
         if (!data.sessions[params.userid]) _rej(fpembed.setTitle("Log in first."))
-        if (!params.orig[0]) _rej(fpembed.setTitle("No ID specified."))
+        if (!params.orig[0]) return _rej(fpembed.setTitle("No ID specified."))
 
         if (params.orig[0].includes("-")) {
             let sendimgs: MessageEmbed[] = []

@@ -7,7 +7,7 @@ import { SBCommand, SBCommandParams } from "../typings/showbie/custom";
 import { ctime } from "../utils";
 
 export default {
-    base: "Main assignments command. Queries through assignments.",
+    base: "Main assignments command.",
     opts: [{
         name: "pen",
         base: "Shows pending assignments.",
