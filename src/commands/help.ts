@@ -40,7 +40,6 @@ If two or more incompatible modifiers or commands are specified, the result migh
                 });
             }
         }
-
-        _res([helpembed]);
+        return _res([helpembed]);
     })
 }

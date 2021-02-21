@@ -28,6 +28,7 @@ interface Model {
 		"req": SBHeaders,
 		"schools": Dict<string>,
 		"studentAccessLevel": Assacclvl,
-		"status": Asstatus
+		"status": Asstatus,
+		"pglen": number
 	}
 }

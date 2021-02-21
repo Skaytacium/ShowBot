@@ -39,7 +39,7 @@ function dispatch(params: SBCommandParams) {
                 else searchembed.setTitle("Search results for " + query);
 
                 results.forEach(rul => {
-                    if (searchembed.length < 1750)
+                    if (searchembed.length < data.main.pglen)
                         searchembed.addField(
                             `${rul.item.name}, ID: ${rul.item.id}`, 
                             `[${rul.item.meta.attachmentCount ? 'Submitted ' + ctime(rul.item.dueDate, info.meta.serverTime) + ' ago' : (rul.item.dueDate > info.meta.serverTime ? 'Due in ' : 'Overdue by ') + ctime(rul.item.dueDate, info.meta.serverTime)}](https://my.showbie.com/assignments/${rul.item.id}/posts)`

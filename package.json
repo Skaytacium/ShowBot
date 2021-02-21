@@ -1,6 +1,6 @@
 {
   "name": "showbot",
-  "version": "0.17.1",
+  "version": "0.18.0",
   "description": "The Showbie API wrapper + Discord bot",
   "main": "build/main.js",
   "dependencies": {

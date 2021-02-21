@@ -40,24 +40,23 @@ function dispatch(params: SBCommandParams) {
 
         else sbreq(params.userid, "assignments")
             .then((info: { "meta": { "serverTime": number }, "assignments": SBAssignment[] }) => {
-                assembed.setTitle("Assignments");
+                let page = 1;
+                assembed.setTitle("Assignments, Page " + page);
 
                 info.assignments.forEach((ass) => {
-                    if (assembed.length < 5500 && approve(info.meta.serverTime, ass, params.orig))
-                        assembed.addField(
-                            `${ass.name}, ID: ${ass.id}`, //Sorry vim users, gotta do it this one time.
-                            `[${ass.meta.attachmentCount ? 'Submitted ' + ctime(ass.dueDate, info.meta.serverTime) + ' ago' : (ass.dueDate > info.meta.serverTime ? 'Due in ' : 'Overdue by ') + ctime(ass.dueDate, info.meta.serverTime)}](https://my.showbie.com/assignments/${ass.id}/posts)`
-                        );
-
-                    else {
+                    if (approve(info.meta.serverTime, ass, params.orig)) assembed.addField(
+                        `${ass.name}, ID: ${ass.id}`, //Sorry vim users, gotta do it this one time.
+                        `[${ass.meta.attachmentCount ? 'Submitted ' + ctime(ass.dueDate, info.meta.serverTime) + ' ago' : (ass.dueDate > info.meta.serverTime ? 'Due in ' : 'Overdue by ') + ctime(ass.dueDate, info.meta.serverTime)}](https://my.showbie.com/assignments/${ass.id}/posts)`
+                    );
+                    
+                    if (assembed.length > data.main.pglen) {
                         final.push(assembed)
-                        assembed.fields = []
-                        assembed.addField(
-                            `${ass.name}, ID: ${ass.id}`, //Sorry vim users, gotta do it this second time.
-                            `[${ass.meta.attachmentCount ? 'Submitted ' + ctime(ass.dueDate, info.meta.serverTime) + ' ago' : (ass.dueDate > info.meta.serverTime ? 'Due in ' : 'Overdue by ') + ctime(ass.dueDate, info.meta.serverTime)}](https://my.showbie.com/assignments/${ass.id}/posts)`
-                        );
+                        page++
+                        assembed = cloneDeep(basembed).setTitle("Assignments, Page " + page)
                     };
                 });
+                final.push(assembed);
+                console.log(final.map(a => a.fields.length))
 
                 _res(final);
             });
@@ -72,11 +71,12 @@ function approve(servertime: number, assignment: SBAssignment, msg: string[]) {
             if (servertime < assignment.dueDate) truthy++;
             else truthy = 0
         }
-        if (msg.includes("old")){
+        if (msg.includes("old")) {
             if (servertime > assignment.dueDate) truthy++;
             else truthy = 0
         }
-    } else truthy++;
+    }
+    else truthy++;
 
     // console.log({
     //     "st": servertime,

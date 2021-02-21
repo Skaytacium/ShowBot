@@ -1,3 +1,6 @@
+import { MessageEmbed } from "discord.js";
+import cloneDeep from "lodash.clonedeep";
+import { basembed } from ".";
 import { SBCommand, SBCommandParams } from "../typings/showbie/custom";
 
 export default {
@@ -13,5 +16,7 @@ export default {
 } as SBCommand
 
 function dispatch(params: SBCommandParams) {
-    
+    return new Promise<MessageEmbed[]>((_res, _rej) => {
+        return _res([cloneDeep(basembed).setTitle("TODO")])
+    })
 }

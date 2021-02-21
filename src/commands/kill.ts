@@ -15,13 +15,13 @@ export default {
 function dispatch(params: SBCommandParams) {
     return new Promise<string[]>((_res, _rej) => {
         refresh(["kills"]);
-        
-        if (params.orig[0].toLowerCase() == "contribute") {
+
+        if (params.orig[0].toLowerCase() == "contribute")
             _rej("TODO")
-        }
+
         else if (data.kills[params.orig[0].toLowerCase()])
             _res([ranval(data.kills[params.orig[0].toLowerCase()])]);
-        
+
         else _rej("Not Found.");
     })
 }
