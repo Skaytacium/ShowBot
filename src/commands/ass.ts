@@ -43,12 +43,15 @@ function dispatch(params: SBCommandParams) {
                 let page = 1;
                 assembed.setTitle("Assignments, Page " + page);
 
+                if (params.orig.includes("--new")) info.assignments.sort((a, b) => b.dueDate - a.dueDate)
+                else if (params.orig.includes("--old")) info.assignments.sort((a, b) => a.dueDate - b.dueDate)
+
                 info.assignments.forEach((ass) => {
                     if (approve(info.meta.serverTime, ass, params.orig)) assembed.addField(
                         `${ass.name}, ID: ${ass.id}`, //Sorry vim users, gotta do it this one time.
                         `[${ass.meta.attachmentCount ? 'Submitted ' + ctime(ass.dueDate, info.meta.serverTime) + ' ago' : (ass.dueDate > info.meta.serverTime ? 'Due in ' : 'Overdue by ') + ctime(ass.dueDate, info.meta.serverTime)}](https://my.showbie.com/assignments/${ass.id}/posts)`
                     );
-                    
+
                     if (assembed.length > data.main.pglen) {
                         final.push(assembed)
                         page++
@@ -56,7 +59,6 @@ function dispatch(params: SBCommandParams) {
                     };
                 });
                 final.push(assembed);
-                console.log(final.map(a => a.fields.length))
 
                 _res(final);
             });
@@ -67,23 +69,13 @@ function approve(servertime: number, assignment: SBAssignment, msg: string[]) {
     let truthy = 0;
 
     if (!assignment.meta.attachmentCount) {
-        if (msg.includes("pen")) {
-            if (servertime < assignment.dueDate) truthy++;
-            else truthy = 0
-        }
-        if (msg.includes("old")) {
-            if (servertime > assignment.dueDate) truthy++;
-            else truthy = 0
-        }
+        if (msg.includes("pen") && servertime < assignment.dueDate) truthy++;
+        else truthy--;
+        if (msg.includes("old") && servertime > assignment.dueDate) truthy++;
+        else truthy--;
     }
-    else truthy++;
 
-    // console.log({
-    //     "st": servertime,
-    //     "add": assignment.dueDate,
-    //     "ac": assignment.meta.attachmentCount,
-    //     "truthy": truthy
-    // })
+    if (truthy < 0) truthy = 0
 
-    return truthy
+    return true
 }
