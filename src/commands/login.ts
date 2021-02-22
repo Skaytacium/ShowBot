@@ -3,7 +3,7 @@ import cloneDeep from "lodash.clonedeep";
 import { basembed } from ".";
 import { login } from "../api/log";
 import { data, refresh } from "../data";
-import { SBCommand } from "../typings/showbie/custom";
+import { SBCommand, SBCommandParams } from "../typings/showbie/custom";
 
 export default {
     base: "Logs in to your account securely.",
@@ -22,10 +22,7 @@ export default {
     get: dispatch
 } as SBCommand
 
-function dispatch(params: {
-    orig: string[],
-    userid: string
-}) {
+function dispatch(params: SBCommandParams) {
     return new Promise<MessageEmbed[]>((_res, _rej) => {
         const logembed = cloneDeep(basembed);
 
