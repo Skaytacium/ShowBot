@@ -58,14 +58,15 @@ function dispatch(params: SBCommandParams) {
                         assembed = cloneDeep(basembed).setTitle("Assignments, Page " + page)
                     };
                 });
-                final.push(assembed);
+
+                if (assembed.fields.length > 0) final.push(assembed);
 
                 _res(final);
             });
     });
 }
 
-function approve(servertime: number, assignment: SBAssignment, msg: string[]) {
+function approve(servertime: number, assignment: SBAssignment, msg: string[]) { //Doesn't actually work lmao
     let truthy = 0;
 
     if (!assignment.meta.attachmentCount) {
@@ -77,5 +78,5 @@ function approve(servertime: number, assignment: SBAssignment, msg: string[]) {
 
     if (truthy < 0) truthy = 0
 
-    return true
+    return !assignment.meta.attachmentCount
 }

@@ -1,3 +1,6 @@
+//These are just representations of what happens in the .json files because I cannot import outside of rootDir
+//which is src and I do not want to copy databases because that would be eh.
+
 declare interface Dict<T> {
     [key: string]: T
 }
