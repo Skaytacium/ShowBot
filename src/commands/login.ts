@@ -35,11 +35,11 @@ function dispatch(params: SBCommandParams) {
             login(params.userid, data.accounts[params.userid])
                 .then(val => _res([logembed
                     .setTitle(val)
-                    .setDescription("Used already existing account creds.")
+                    .setDescription("Used already existing account credentials.")
                 ]))
                 .catch(val => _rej(logembed
                     .setTitle(val)
-                    .setDescription("Used already existing account creds.")
+                    .setDescription("Used already existing account credentials.")
                 ))
 
         else if (!params.orig[0])

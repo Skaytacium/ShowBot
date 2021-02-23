@@ -16,6 +16,7 @@ export function login(userID: string, acc: STBAcc) {
                 "headers": { ...bschead(acc) }
             },
             res => {
+                //Too lazy to add the type, plus its a very small thing
                 let recdat: any = '';
                 res.on('data', chunk => recdat += chunk.toString());
 
