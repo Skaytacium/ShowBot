@@ -8,7 +8,7 @@ First of all, if you want to contribute, thats great. Fork the repo and open a p
 
 ### But, how?
 
-ShowBot doesn't have any official documentation or a wiki, but it works on a file based command system. Each file has a default export of the typee `SBCommand` which you can see [here](./typings/showbie/custom.ts). (If the link doesn't work, its in `typings/showbie/custom.ts`).
+ShowBot doesn't have any official documentation or a wiki, but it works on a file based command system. Each file has a default export of the typee `SBCommand` which you can see [here](./src/typings/showbie/custom.ts).
 
 ### And?
 
