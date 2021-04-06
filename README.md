@@ -23,7 +23,7 @@ You can run ShowBot yourself by cloning this repository, installing the dependan
 
 ### Safety?
 
-ShowBot is currently relying on a custom-ish json file database. Due to the nature of open source software, you are putting yourself at risk if you use an unofficial copy of ShowBot, as the hoster has access to the database which stores your passwords and IDs.
+ShowBot is currently relying on a custom json file database. Due to the nature of open source software, you are putting yourself at risk if you use an unofficial copy of ShowBot, as the hoster has access to the database which stores your passwords and IDs.
 
 Encryption is a feature in the roadmap, but its pretty far from where it is right now.
 
